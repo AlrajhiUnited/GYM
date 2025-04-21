@@ -1,303 +1,255 @@
-/* --- Global Styles & Fonts --- */
-:root {
-    --primary-color: #0056b3; /* أزرق داكن */
-    --secondary-color: #f8f9fa; /* خلفية فاتحة */
-    --accent-color: #007bff; /* أزرق أفتح */
-    --text-color: #343a40; /* رمادي داكن للنصوص */
-    --border-color: #dee2e6; /* رمادي فاتح للحدود */
-    --hover-bg-color: #e9ecef; /* خلفية عند المرور */
-    --modal-bg: rgba(0, 0, 0, 0.6);
-    --modal-content-bg: #fff;
-    --link-color: #0066cc;
-    --link-hover-color: #004080;
-
-    /* Muscle Group Colors (for border-right) */
-    --chest-color: #dc3545; /* أحمر */
-    --triceps-color: #fd7e14; /* برتقالي */
-    --back-color: #28a745; /* أخضر */
-    --biceps-color: #ffc107; /* أصفر */
-    --core-color: #6f42c1; /* بنفسجي */
-    --legs-color: #d63384; /* وردي */
-    --shoulders-color: #0dcaf0; /* سماوي */
-    --forearms-color: #6c757d; /* رمادي */
-    --abs-color: #198754; /* أخضر داكن */
-}
-
+/* --- Global Styles & Typography (Same as before) --- */
 body {
-    font-family: 'Cairo', sans-serif;
-    line-height: 1.7;
-    color: var(--text-color);
-    background-color: var(--secondary-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    direction: rtl;
     margin: 0;
-    padding: 0;
-    direction: rtl; /* Right-to-Left */
-    font-size: 16px;
-}
-
-/* --- Header & Footer --- */
-header, footer {
-    background-color: var(--primary-color);
-    color: #ffffff;
-    padding: 15px 30px;
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-header h1 {
-    margin-bottom: 10px;
-    font-weight: 700;
-    font-size: 1.8em; /* Larger heading */
-}
-
-header p, footer p {
-    margin: 5px 0;
-    font-size: 0.95em;
-    opacity: 0.9;
-}
-
-footer {
-    margin-top: 30px;
     padding: 20px 30px;
-    font-size: 0.9em;
+    background-color: #f7f8fc;
+    color: #333d4f;
+    line-height: 1.6;
 }
-
-/* --- Main Content & Day Sections --- */
-main {
-    max-width: 1000px;
-    margin: 20px auto;
-    padding: 0 20px;
-}
-
-.day-section {
-    background-color: #ffffff;
-    border-radius: 8px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    overflow: hidden; /* Ensures border-radius works with table */
-}
-
-.day-header {
-    background-color: var(--accent-color);
-    color: white;
-    padding: 12px 20px;
-    font-size: 1.4em;
+/* ... (Keep all previous styles for .main-title, .subtitle, .day-title, table, etc.) ... */
+.main-title {
+    text-align: center;
+    color: #1d2a3f;
+    margin-bottom: 5px;
     font-weight: 600;
 }
 
-/* --- Table Styling --- */
+.subtitle {
+    text-align: center;
+    color: #697a98;
+    margin-bottom: 40px;
+    font-size: 1em;
+}
+
+.workout-plan-container > div {
+    margin-bottom: 40px;
+}
+
+.day-title {
+    font-size: 1.6em;
+    font-weight: 600;
+    color: #1d2a3f;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e1e5ec;
+}
+.day-title .day-focus {
+    font-weight: 500;
+    color: #4a5a75;
+    font-size: 0.85em;
+}
+
+/* --- Improved Table Styling (Same as before) --- */
 .workout-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 0; /* Remove space between header and table */
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 3px 8px rgba(100, 115, 140, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-.workout-table th,
-.workout-table td {
-    text-align: right; /* Align text to the right for Arabic */
-    padding: 15px 20px; /* Increased padding */
-    vertical-align: top; /* Align content to the top */
-    border-bottom: 1px solid var(--border-color); /* Horizontal lines only */
+.workout-table th, .workout-table td {
+    padding: 18px 20px;
+    text-align: right;
+    border-bottom: 1px solid #e8edf3;
+    vertical-align: middle;
+}
+
+.workout-table tr:last-child td {
+    border-bottom: none;
 }
 
 .workout-table th {
-    background-color: #f1f3f5; /* Lighter header background */
-    font-weight: 600;
-    font-size: 0.95em;
-    color: var(--primary-color);
-}
-
-.workout-table tbody tr {
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-    border-right: 5px solid transparent; /* Placeholder for muscle group color */
-}
-
-.workout-table tbody tr:hover {
-    background-color: var(--hover-bg-color);
-}
-
-.workout-table tbody tr:last-child td {
-    border-bottom: none; /* Remove border from last row */
-}
-
-/* Column Widths (Adjust as needed) */
-.workout-table th:nth-child(1), .workout-table td:nth-child(1) { width: 45%; } /* التمرين */
-.workout-table th:nth-child(2), .workout-table td:nth-child(2) { width: 25%; } /* الجلسات والتكرارات */
-.workout-table th:nth-child(3), .workout-table td:nth-child(3) { width: 30%; } /* الراحة */
-
-/* Exercise Cell Content */
-.exercise-name-ar {
-    font-weight: 600;
-    display: block; /* Ensure it's on its own line */
-    margin-bottom: 4px;
-}
-
-.exercise-note {
-    font-size: 0.85em;
-    color: #555;
-    display: block;
-    margin-bottom: 6px;
-    font-style: italic;
-}
-
-.exercise-link {
+    background-color: #f8f9fd;
+    color: #50617a;
     font-size: 0.9em;
-    color: var(--link-color);
-    text-decoration: none;
-    display: inline-block; /* Allows interaction */
-    transition: color 0.2s ease;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e1e5ec;
 }
 
-.exercise-link:hover {
-    color: var(--link-hover-color);
+.exercise-row {
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+    border-right: 5px solid transparent;
+}
+
+.exercise-row:hover {
+    background-color: #f7faff;
+}
+
+/* --- Cell Content Styling (Same as before) --- */
+.exercise-name-cell .name-ar {
+    font-weight: 600;
+    font-size: 1.1em;
+    color: #2a3850;
+    margin-bottom: 5px;
+    display: block;
+}
+.exercise-name-cell .tech-note {
+    font-size: 0.85em;
+    font-style: italic;
+    color: #e74c3c;
+    display: block;
+    margin-top: 4px;
+}
+
+.exercise-name-cell .exercise-link {
+    color: #006ae0;
+    text-decoration: none;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    display: block;
+    margin-top: 5px;
+}
+.exercise-name-cell .exercise-link:hover {
+    color: #004a9e;
     text-decoration: underline;
 }
 
-/* Muscle Group Indicator Borders */
-.workout-table tr[data-muscle-group="صدر"] { border-right-color: var(--chest-color); }
-.workout-table tr[data-muscle-group="ترايسبس"] { border-right-color: var(--triceps-color); }
-.workout-table tr[data-muscle-group="ظهر"] { border-right-color: var(--back-color); }
-.workout-table tr[data-muscle-group="بايسبس"] { border-right-color: var(--biceps-color); }
-.workout-table tr[data-muscle-group="جذع"] { border-right-color: var(--core-color); }
-.workout-table tr[data-muscle-group="أرجل"] { border-right-color: var(--legs-color); }
-.workout-table tr[data-muscle-group="فخذ أمامي"] { border-right-color: var(--legs-color); } /* Use legs color */
-.workout-table tr[data-muscle-group="فخذ خلفي"] { border-right-color: var(--legs-color); } /* Use legs color */
-.workout-table tr[data-muscle-group="سمانة"] { border-right-color: var(--legs-color); } /* Use legs color */
-.workout-table tr[data-muscle-group="أكتاف"] { border-right-color: var(--shoulders-color); }
-.workout-table tr[data-muscle-group="ساعد"] { border-right-color: var(--forearms-color); }
-.workout-table tr[data-muscle-group="بطن"] { border-right-color: var(--abs-color); }
+.sets-reps-cell, .rest-cell {
+    font-size: 0.95em;
+    color: #4a5a75;
+    white-space: nowrap;
+}
 
+/* --- Muscle Group Coloring (Same as before) --- */
+.exercise-row[data-group="chest"] { border-right-color: #3498db; }
+.exercise-row[data-group="back"] { border-right-color: #2ecc71; }
+.exercise-row[data-group="legs"] { border-right-color: #f39c12; }
+.exercise-row[data-group="shoulders"] { border-right-color: #9b59b6; }
+.exercise-row[data-group="biceps"] { border-right-color: #e74c3c; }
+.exercise-row[data-group="triceps"] { border-right-color: #f1c40f; }
+.exercise-row[data-group="core"] { border-right-color: #7f8c8d; }
+.exercise-row[data-group="calves"] { border-right-color: #d35400; }
+.exercise-row[data-group="forearms"] { border-right-color: #1abc9c; }
 
 /* --- Modal Styling --- */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Enable scroll if needed */
-    background-color: var(--modal-bg);
-    animation: fadeIn 0.3s ease-out; /* Fade-in animation */
+    overflow: auto;
+    background-color: rgba(40, 50, 70, 0.7);
+    backdrop-filter: blur(3px);
 }
 
 .modal-content {
-    background-color: var(--modal-content-bg);
-    margin: 10% auto; /* Centered vertically and horizontally */
-    padding: 30px 40px;
-    border: 1px solid var(--border-color);
-    width: 80%; /* Could be more or less, depending on screen size */
-    max-width: 650px;
+    background-color: #ffffff;
+    margin: 8% auto; /* Slightly higher */
+    padding: 35px 40px;
+    border: none;
+    width: 90%;
+    max-width: 600px; /* Slightly wider for alternatives */
     border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-    position: relative; /* For positioning the close button */
-    animation: slideIn 0.4s ease-out; /* Slide-in animation */
-    text-align: right; /* Align text right */
-}
-
-.modal-details p {
-    margin-bottom: 12px; /* Spacing between details */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    position: relative;
     font-size: 1.05em;
-    line-height: 1.6;
 }
 
-.modal-details p strong {
-    color: var(--primary-color);
-    min-width: 120px; /* Ensure alignment */
-    display: inline-block; /* Needed for min-width */
-}
-
-.modal-content h2 {
+.modal-content h3 {
     margin-top: 0;
-    margin-bottom: 25px;
-    color: var(--accent-color);
-    font-weight: 700;
-    border-bottom: 2px solid var(--accent-color);
-    padding-bottom: 10px;
+    color: #1d2a3f;
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.modal-content p {
+    line-height: 1.7;
+    margin-bottom: 3px;
+    color: #333d4f;
+}
+.modal-content p strong {
+    color: #1d2a3f;
+    font-weight: 600;
+    min-width: 80px;
+    display: inline-block;
+}
+.modal-content p.muscle-en {
+    font-size: 0.9em;
+    color: #697a98;
+    margin-bottom: 15px;
+    padding-right: 85px;
+}
+/* Style for Alternative section in Modal */
+#modal-alternative-section p strong {
+    color: #1abc9c; /* Teal color for alternative label */
+}
+#modal-alternative-section p {
+     margin-bottom: 3px;
+}
+#modal-alternative-section p.muscle-en { /* Style for English alt name */
+     padding-right: 0; /* Remove specific indent */
+     margin-left: 10px; /* Add left margin instead */
+     display: inline; /* Display inline with Arabic */
+     font-size: 0.9em;
+     color: #697a98;
+}
+
+
+.modal-content hr {
+    margin: 20px 0; /* Adjust spacing */
+    border: 0;
+    border-top: 1px solid #e1e5ec;
+}
+.modal-content p.exercise-notes {
+    margin-top: 15px;
+    font-size: 0.95em;
+    font-style: italic;
+    color: #e74c3c;
+    background-color: #fef5f5;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #fce8e6;
 }
 
 .close-button {
-    color: #aaa;
+    color: #8896ae;
     position: absolute;
-    left: 15px; /* Positioned top-left */
-    top: 10px;
-    font-size: 32px;
+    left: 20px;
+    top: 15px;
+    font-size: 30px;
     font-weight: bold;
-    transition: color 0.2s ease;
+    transition: color 0.3s ease;
+    line-height: 1;
 }
 
 .close-button:hover,
 .close-button:focus {
-    color: #555;
+    color: #333d4f;
     text-decoration: none;
     cursor: pointer;
 }
 
-/* Modal Animations */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideIn {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-/* --- Responsive Design --- */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    header h1 {
-        font-size: 1.5em;
-    }
-    main {
-        padding: 0 10px;
-    }
-    .workout-table th,
-    .workout-table td {
-        padding: 12px 10px;
-        font-size: 0.9em;
-    }
-    .exercise-name-ar {
-        font-size: 1em;
-    }
-    .exercise-note {
-        font-size: 0.8em;
-    }
-    .exercise-link {
-        font-size: 0.85em;
-    }
-    .modal-content {
+    body { padding: 15px; }
+    .main-title { font-size: 1.8em; }
+    .subtitle { font-size: 0.9em; margin-bottom: 30px; }
+    .day-title { font-size: 1.4em; }
+    .workout-table th, .workout-table td { padding: 12px 15px; }
+    .exercise-name-cell .name-ar { font-size: 1em; }
+    .exercise-name-cell .tech-note { font-size: 0.8em; }
+    .exercise-name-cell .exercise-link { font-size: 0.9em; }
+    .sets-reps-cell, .rest-cell { font-size: 0.9em; }
+     .modal-content {
+        margin: 10% auto;
+        padding: 25px 30px;
         width: 90%;
-        margin: 15% auto;
-        padding: 20px;
     }
-    .modal-content h2 {
-        font-size: 1.4em;
-    }
-    .modal-details p {
-        font-size: 1em;
-    }
-    .close-button {
-        font-size: 28px;
-        left: 10px;
-        top: 5px;
-    }
-}
-
-@media (max-width: 480px) {
-    header, footer {
-        padding: 10px 15px;
-    }
-    header h1 {
-        font-size: 1.3em;
-    }
-     header p, footer p {
-        font-size: 0.85em;
-    }
-    .day-header {
-        font-size: 1.2em;
-        padding: 10px 15px;
-    }
-    /* Consider stacking table on very small screens if needed */
+     .modal-content h3 { font-size: 1.3em; }
+     .modal-content p.muscle-en { padding-right: 0; font-size: 0.85em;}
+     .modal-content p.exercise-notes { font-size: 0.9em; padding: 6px 10px; }
+     #modal-alternative-section p.muscle-en { display: block; margin-left: 0; margin-top: 5px;} /* Stack alternatives on mobile */
 }

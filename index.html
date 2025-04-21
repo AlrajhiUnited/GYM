@@ -3,41 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خطة تمرين متقدمة - 5 أيام</title>
+    <title>الجدول النهائي (مع بدائل الأجهزة)</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>خطة تمرين متقدمة للبناء العضلي وإعادة تشكيل الجسم (5 أيام)</h1>
-        <p>مستوى متقدم | الهدف: بناء عضلي وخسارة دهون | العمر: 37 | الوزن: 76 كجم | الطول: 171 سم</p>
-        <p>ملاحظات هامة: التركيز على الذراعين والأكتاف. مراعاة ألم أسفل الظهر وميلان صابونة الركبة.</p>
-    </header>
 
-    <main id="workout-plan">
-        </main>
+    <h1 class="main-title">الجدول النهائي للتمرين (مع بدائل الأجهزة)</h1>
+    <p class="subtitle">انقر على اسم التمرين بالإنجليزية لفتح فيديو تعليمي. انقر على الصف لعرض التفاصيل والبدائل.</p>
 
-    <footer>
-        <p>الإحماء: 5-10 دقائق كارديو خفيف + إطالات ديناميكية قبل كل تمرين.</p>
-        <p>الكارديو: 20 دقيقة كارديو متوسط الشدة بعد تمارين الحديد.</p>
-        <p>التهدئة: 5-10 دقائق إطالات ثابتة بعد التمرين.</p>
-    </footer>
+    <div class="workout-plan-container">
+        <div id="day-saturday">
+            <h2 class="day-title">السبت: <span class="day-focus">صدر (رئيسي) + ترايسبس (متوسط)</span></h2>
+            </div>
+        <div id="day-sunday">
+            <h2 class="day-title">الأحد: <span class="day-focus">ظهر (رئيسي) + بايسبس (متوسط) + جذع</span></h2>
+            </div>
+        <div id="day-monday">
+             <h2 class="day-title">الاثنين: <span class="day-focus">أرجل (تركيز على الأمان)</span></h2>
+             </div>
+         <div id="day-tuesday">
+            <h2 class="day-title">الثلاثاء: <span class="day-focus">أكتاف (رئيسي) + ترايسبس (ثقيل)</span></h2>
+             </div>
+         <div id="day-wednesday">
+            <h2 class="day-title">الأربعاء: <span class="day-focus">بايسبس (ثقيل) + ساعد + بطن</span></h2>
+             </div>
+    </div>
 
     <div id="exerciseModal" class="modal">
         <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2 id="modal-title">اسم التمرين</h2>
-            <div class="modal-details">
-                <p><strong>الجلسات والتكرارات:</strong> <span id="modal-sets-reps"></span></p>
-                <p><strong>الراحة:</strong> <span id="modal-rest"></span></p>
-                <p><strong>العضلة الأساسية:</strong> <span id="modal-primary-muscle-ar"></span> (<span id="modal-primary-muscle-en"></span>)</p>
-                <p><strong>العضلات الثانوية:</strong> <span id="modal-secondary-muscle-ar"></span> (<span id="modal-secondary-muscle-en"></span>)</p>
-                <p id="modal-alternative-container" style="display: none;"><strong>البديل بالجهاز:</strong> <span id="modal-alternative-ar"></span> (<span id="modal-alternative-en"></span>)</p>
-                <p id="modal-notes-container" style="display: none;"><strong>ملاحظات وتقنيات:</strong> <span id="modal-notes"></span></p>
+            <span class="close-button">×</span>
+            <h3 id="modal-exercise-name-ar"></h3>
+            <p><strong>الجلسات:</strong> <span id="modal-sets"></span></p>
+            <p><strong>التكرارات:</strong> <span id="modal-reps"></span></p>
+            <p><strong>الراحة:</strong> <span id="modal-rest"></span></p>
+            <hr>
+            <p><strong>العضلة الأساسية المستهدفة:</strong></p>
+            <p id="modal-primary-muscle"></p>
+            <p id="modal-primary-muscle-en" class="muscle-en"></p>
+            <p><strong>العضلات الثانوية المشاركة:</strong></p>
+            <p id="modal-secondary-muscle"></p>
+            <p id="modal-secondary-muscle-en" class="muscle-en"></p>
+            <div id="modal-alternative-section" style="display: none;">
+                <hr>
+                <p><strong>بديل مقترح بالجهاز:</strong></p>
+                <p id="modal-alternative-ar"></p>
+                <p id="modal-alternative-en" class="muscle-en"></p>
             </div>
-        </div>
+            <p id="modal-notes" class="exercise-notes" style="display: none;"></p> </div>
     </div>
 
     <script src="script.js"></script>

@@ -3,55 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الجدول النهائي (مع بدائل الأجهزة)</title>
-    <link rel="stylesheet" href="style.css">
+    <title>لوحة بيانات الأداء - At a Glance Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold-primary: #c8a97e;
+            --gold-secondary: #e0c8a0;
+            --bg-light: #f7f8fa;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --text-dark: #374151;
+            --text-muted: #6b7280;
+            --green-400: #34d399;
+            --red-400: #f87171;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07);
+            border-color: var(--gold-primary);
+        }
+        
+        .section-title { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--text-dark); 
+            border-bottom: 2px solid var(--gold-primary); 
+            padding-bottom: 0.5rem; 
+            margin-bottom: 1.5rem; 
+        }
+
+        .masonry-grid {
+            display: grid;
+            grid-gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        @media (min-width: 1024px) {
+            .masonry-grid {
+                grid-template-columns: repeat(12, 1fr);
+            }
+        }
+
+        .trend-graph { height: 40px; width: 100%; display: flex; align-items: flex-end; justify-content: space-between; }
+        .trend-bar { width: 15%; background-color: var(--border-color); border-radius: 3px 3px 0 0; position: relative; transition: background-color 0.3s; }
+        .trend-bar:hover { background-color: var(--gold-primary); }
+        .trend-tooltip {
+            position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%);
+            background-color: var(--text-dark); color: white; padding: 4px 8px; border-radius: 4px;
+            font-size: 12px; font-weight: 700; white-space: nowrap; visibility: hidden; opacity: 0;
+            transition: opacity 0.2s, visibility 0.2s; border: 1px solid var(--gold-primary); z-index: 10;
+        }
+        .trend-bar:hover .trend-tooltip { visibility: visible; opacity: 1; }
+        
+        .icon-container {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fdf8f1;
+        }
+        .icon-container svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            color: var(--gold-primary);
+        }
+
+
+        @media print {
+            :root { --bg-light: #ffffff; --card-bg: #ffffff; --border-color: #d1d5db; --text-dark: #000000; --text-muted: #6b7280; }
+            @page { size: A4 portrait; margin: 15mm; }
+            body { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none !important; }
+            .print-container { padding: 0 !important; margin: 0 !important; max-width: 100% !important; box-shadow: none !important; }
+            .card { background-color: #ffffff !important; border: 1px solid #d1d5db !important; box-shadow: none !important; page-break-inside: avoid; }
+            .grid { grid-template-columns: repeat(2, 1fr) !important; }
+            h1, h2, h3, p, span, .section-title { color: #000 !important; }
+            .gold-gradient-text { background: none !important; -webkit-text-fill-color: #c8a97e !important; }
+            .icon-container svg { color: #c8a97e !important; }
+            .trend-bar { background-color: #d1d5db !important; }
+            [class*="lg:col-span-"] { grid-column: span 1 !important; }
+            [class*="lg:row-span-"] { grid-row: span 1 !important; }
+        }
+    </style>
 </head>
-<body>
+<body class="antialiased">
 
-    <h1 class="main-title">الجدول النهائي للتمرين (مع بدائل الأجهزة)</h1>
-    <p class="subtitle">انقر على اسم التمرين بالإنجليزية لفتح فيديو تعليمي. انقر على الصف لعرض التفاصيل والبدائل.</p>
+    <div class="print-container container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="flex justify-between items-center mb-8 pb-4 border-b border-border-color">
+             <div>
+                <h1 class="text-3xl font-bold gold-gradient-text">تقرير الأداء العام</h1>
+                <p class="text-text-muted">نظرة سريعة للسنوات 2021 - 2025</p>
+            </div>
+            <div class="flex items-center space-x-4 space-x-reverse">
+                <button onclick="window.print()" class="no-print p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+                    <svg class="w-6 h-6 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                </button>
+                <img src="https://placehold.co/150x50/f7f8fa/c8a97e?text=شعار+الشركة" alt="شعار الشركة" class="h-12" id="company-logo">
+            </div>
+        </header>
 
-    <div class="workout-plan-container">
-        <div id="day-saturday">
-            <h2 class="day-title">السبت: <span class="day-focus">صدر (رئيسي) + ترايسبس (متوسط)</span></h2>
-            </div>
-        <div id="day-sunday">
-            <h2 class="day-title">الأحد: <span class="day-focus">ظهر (رئيسي) + بايسبس (متوسط) + جذع</span></h2>
-            </div>
-        <div id="day-monday">
-             <h2 class="day-title">الاثنين: <span class="day-focus">أرجل (تركيز على الأمان)</span></h2>
-             </div>
-         <div id="day-tuesday">
-            <h2 class="day-title">الثلاثاء: <span class="day-focus">أكتاف (رئيسي) + ترايسبس (ثقيل)</span></h2>
-             </div>
-         <div id="day-wednesday">
-            <h2 class="day-title">الأربعاء: <span class="day-focus">بايسبس (ثقيل) + ساعد + بطن</span></h2>
-             </div>
+        <main class="space-y-12">
+            
+            <section>
+                <h2 class="section-title">النمو الاستراتيجي</h2>
+                <div class="masonry-grid">
+                    <div class="card lg:col-span-8 lg:row-span-2">
+                        <h3 class="text-xl font-bold text-text-dark mb-4">نمو الإيرادات وقيمة المحفظة (مليون)</h3>
+                        <div class="flex-grow min-h-[20rem]"><canvas id="mainChart"></canvas></div>
+                    </div>
+                    <div class="card lg:col-span-4"><div id="kpi-roi"></div></div>
+                    <div class="card lg:col-span-4"><div id="kpi-operating-expense-ratio"></div></div>
+                    <div class="card lg:col-span-6"><div id="kpi-customer-satisfaction"></div></div>
+                    <div class="card lg:col-span-6"><div id="kpi-debt-to-equity-ratio"></div></div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="section-title">التميز التشغيلي والأصول</h2>
+                <div class="masonry-grid">
+                    <div class="card lg:col-span-3"><div id="kpi-completed-projects"></div></div>
+                    <div class="card lg:col-span-3"><div id="kpi-on-time-completion"></div></div>
+                    <div class="card lg:col-span-3"><div id="kpi-construction-quality"></div></div>
+                    <div class="card lg:col-span-3"><div id="kpi-safety-incidents"></div></div>
+                    <div class="card lg:col-span-6"><div id="kpi-occupancy-rate"></div></div>
+                    <div class="card lg:col-span-6"><div id="kpi-rental-income-growth"></div></div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="section-title">رأس المال البشري</h2>
+                <div class="masonry-grid">
+                    <div class="card lg:col-span-3"><div id="kpi-employee-count"></div></div>
+                    <div class="card lg:col-span-3"><div id="kpi-employee-satisfaction"></div></div>
+                    <div class="card lg:col-span-3"><div id="kpi-turnover-rate"></div></div>
+                    <div class="card lg:col-span-3"><div id="kpi-training-hours"></div></div>
+                    <div class="card lg:col-span-6"><div id="kpi-offer-acceptance-rate"></div></div>
+                    <div class="card lg:col-span-6"><div id="kpi-internal-promotion-rate"></div></div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="section-title">الحوكمة والكفاءة المؤسسية</h2>
+                <div class="masonry-grid">
+                     <div class="card lg:col-span-3"><div id="kpi-signed-contracts"></div></div>
+                    <div class="card lg:col-span-3"><div id="kpi-procurement-savings"></div></div>
+                    <div class="card lg:col-span-3"><div id="kpi-contract-cycle-time"></div></div>
+                    <div class="card lg:col-span-3"><div id="kpi-compliance-rate"></div></div>
+                    <div class="card lg:col-span-6"><div id="kpi-cybersecurity-incidents"></div></div>
+                    <div class="card lg:col-span-6"><div id="kpi-it-support-resolution-time"></div></div>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <div id="exerciseModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">×</span>
-            <h3 id="modal-exercise-name-ar"></h3>
-            <p><strong>الجلسات:</strong> <span id="modal-sets"></span></p>
-            <p><strong>التكرارات:</strong> <span id="modal-reps"></span></p>
-            <p><strong>الراحة:</strong> <span id="modal-rest"></span></p>
-            <hr>
-            <p><strong>العضلة الأساسية المستهدفة:</strong></p>
-            <p id="modal-primary-muscle"></p>
-            <p id="modal-primary-muscle-en" class="muscle-en"></p>
-            <p><strong>العضلات الثانوية المشاركة:</strong></p>
-            <p id="modal-secondary-muscle"></p>
-            <p id="modal-secondary-muscle-en" class="muscle-en"></p>
-            <div id="modal-alternative-section" style="display: none;">
-                <hr>
-                <p><strong>بديل مقترح بالجهاز:</strong></p>
-                <p id="modal-alternative-ar"></p>
-                <p id="modal-alternative-en" class="muscle-en"></p>
-            </div>
-            <p id="modal-notes" class="exercise-notes" style="display: none;"></p> </div>
-    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const years = ['2021', '2022', '2023', '2024', '2025'];
+            
+            const kpiDefinitions = {
+                'kpi-roi': { title: 'العائد على الاستثمار', data: [8, 9.5, 11, 12.5, 14], unit: '%', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>` },
+                'kpi-operating-expense-ratio': { title: 'نسبة المصاريف التشغيلية', data: [45, 43, 40, 41, 38], unit: '%', inverse: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7" /></svg>` },
+                'kpi-debt-to-equity-ratio': { title: 'نسبة الدين إلى حقوق الملكية', data: [0.8, 0.75, 0.6, 0.65, 0.5], unit: '', inverse: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 8h6m-5 4h4m5 6H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2z" /></svg>` },
+                'kpi-customer-satisfaction': { title: 'رضا العملاء', data: [88, 90, 91, 93, 96], unit: '%', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>` },
+                'kpi-completed-projects': { title: 'المشاريع المكتملة', data: [8, 10, 12, 15, 18], unit: '', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>` },
+                'kpi-on-time-completion': { title: 'الإنجاز في الوقت المحدد', data: [85, 88, 92, 91, 94], unit: '%', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>` },
+                'kpi-construction-quality': { title: 'مؤشر جودة البناء', data: [92, 94, 95, 96, 98], unit: '/100', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586l4.293-4.293a1 1 0 011.414 0z" /></svg>` },
+                'kpi-safety-incidents': { title: 'حوادث السلامة', data: [4, 3, 3, 2, 1], unit: '', inverse: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`},
+                'kpi-occupancy-rate': { title: 'معدل إشغال الأصول', data: [85, 88, 90, 92, 95], unit: '%', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m-1 4h1m6-4h1m-1 4h1m-1-8h1" /></svg>` },
+                'kpi-rental-income-growth': { title: 'نمو إيرادات الإيجار', data: [5, 6, 7.5, 8, 9.5], unit: '%', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>`},
+                'kpi-employee-count': { title: 'إجمالي الموظفين', data: [80, 95, 110, 130, 150], unit: '', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>` },
+                'kpi-employee-satisfaction': { title: 'رضا الموظفين', data: [82, 85, 87, 86, 90], unit: '%', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>` },
+                'kpi-turnover-rate': { title: 'معدل دوران الموظفين', data: [12, 11, 9, 10, 8], unit: '%', inverse: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l-6 6 6 6M5 5h14a2 2 0 012 2v3a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" /></svg>` },
+                'kpi-training-hours': { title: 'متوسط ساعات التدريب', data: [16, 18, 22, 25, 28], unit: ' س', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>` },
+                'kpi-offer-acceptance-rate': { title: 'نسبة قبول العروض', data: [85, 88, 91, 90, 93], unit: '%', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.085a2 2 0 00-1.736.986L7 10m7-10a2 2 0 00-2-2H7a2 2 0 00-2 2v5a2 2 0 002 2h2.553a1 1 0 01.942.66l.263.791a1 1 0 00.942.66h3.558a1 1 0 00.942-.66l.263-.791a1 1 0 01.942-.66H17a2 2 0 002-2v-1a2 2 0 00-2-2h-2.236a2 2 0 01-1.789-2.894l3.5-7z" /></svg>` },
+                'kpi-internal-promotion-rate': { title: 'معدل الترقية الداخلية', data: [15, 17, 20, 22, 25], unit: '%', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>` },
+                'kpi-signed-contracts': { title: 'العقود المبرمة', data: [120, 140, 165, 190, 220], unit: '', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>` },
+                'kpi-procurement-savings': { title: 'التوفير في المشتريات', data: [5, 5.5, 6, 6.2, 7], unit: '%', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>` },
+                'kpi-contract-cycle-time': { title: 'متوسط زمن إغلاق العقد', data: [25, 22, 20, 18, 15], unit: ' يوم', inverse: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.566a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0zM17.434 17.434a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414zM12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707.707M6.343 6.343l-.707.707m12.728 0l-.707-.707M6.343 17.657l-.707-.707" /></svg>` },
+                'kpi-compliance-rate': { title: 'الامتثال التنظيمي', data: [98, 98.5, 99, 99.2, 99.5], unit: '%', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 20.417l4.5-4.5m-3.5.5a12.02 12.02 0 011.544-5.292" /></svg>` },
+                'kpi-cybersecurity-incidents': { title: 'الحوادث السيبرانية', data: [5, 4, 2, 3, 1], unit: '', inverse: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>` },
+                'kpi-it-support-resolution-time': { title: 'سرعة حل المشاكل التقنية', data: [8, 7.5, 6, 6.2, 5], unit: ' س', inverse: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m-6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>` },
+            };
+            
+            const mainChartData = {
+                revenue: { data: [50, 65, 80, 100, 130], label: 'الإيرادات' },
+                portfolioValue: { data: [120, 150, 180, 220, 270], label: 'قيمة المحفظة' },
+            };
 
-    <script src="script.js"></script>
+            function createKpiCard(kpiId, kpi) {
+                const cardElement = document.getElementById(kpiId);
+                if (!cardElement) return;
+
+                const firstValue = kpi.data[0];
+                const latestValue = kpi.data[kpi.data.length - 1];
+                const totalChange = firstValue !== 0 ? ((latestValue - firstValue) / Math.abs(firstValue)) * 100 : 0;
+                
+                const isPositive = kpi.inverse ? totalChange < 0 : totalChange > 0;
+                const trendColor = totalChange === 0 ? 'text-text-muted' : isPositive ? 'text-green-400' : 'text-red-400';
+                const trendIcon = totalChange === 0 ? '' : isPositive ? '▲' : '▼';
+
+                let graphHTML = '<div class="trend-graph mt-auto pt-4">';
+                const maxValue = Math.max(...kpi.data);
+                kpi.data.forEach((value, index) => {
+                    const barHeight = maxValue > 0 ? (value / maxValue) * 100 : 0;
+                    graphHTML += `<div class="trend-bar" style="height: ${barHeight}%"><div class="trend-tooltip">${years[index]}: ${value}${kpi.unit}</div></div>`;
+                });
+                graphHTML += '</div>';
+                
+                const iconHTML = `<div class="icon-container">${kpi.icon}</div>`;
+
+                cardElement.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <p class="text-sm text-text-muted font-medium">${kpi.title}</p>
+                        ${iconHTML}
+                    </div>
+                    <div class="my-2">
+                        <p class="text-3xl font-bold text-text-dark">${latestValue.toLocaleString()}${kpi.unit}</p>
+                        <div class="flex items-center text-sm font-bold ${trendColor}">
+                            <span>${trendIcon} ${Math.abs(totalChange).toFixed(1)}%</span>
+                            <span class="text-xs text-text-muted font-medium mr-2">(خلال 5 سنوات)</span>
+                        </div>
+                    </div>
+                    ${graphHTML}
+                `;
+            }
+
+            Object.keys(kpiDefinitions).forEach(id => createKpiCard(id, kpiDefinitions[id]));
+            
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: { 
+                    labels: years, 
+                    datasets: [
+                        {
+                            label: mainChartData.revenue.label, 
+                            data: mainChartData.revenue.data, 
+                            borderColor: 'var(--gold-primary)',
+                            backgroundColor: 'rgba(200, 169, 126, 0.2)',
+                            borderWidth: 2, pointBackgroundColor: 'var(--gold-primary)', pointBorderColor: '#fff', pointHoverRadius: 7, tension: 0.4, fill: true, yAxisID: 'y'
+                        },
+                        {
+                            label: mainChartData.portfolioValue.label, 
+                            data: mainChartData.portfolioValue.data, 
+                            borderColor: 'var(--text-muted)',
+                            backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                            borderWidth: 2, pointBackgroundColor: 'var(--text-muted)', pointBorderColor: '#fff', pointHoverRadius: 7, tension: 0.4, fill: false, yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        y: { type: 'linear', display: true, position: 'left', beginAtZero: false, grid: { color: 'var(--border-color)' }, ticks: { color: 'var(--text-muted)', callback: (value) => value + ' M' } },
+                        y1: { type: 'linear', display: true, position: 'right', beginAtZero: false, grid: { drawOnChartArea: false }, ticks: { color: 'var(--text-muted)', callback: (value) => value + ' M' } },
+                        x: { grid: { display: false }, ticks: { color: 'var(--text-muted)' } }
+                    },
+                    plugins: {
+                        legend: { labels: { color: 'var(--text-dark)' } },
+                        tooltip: {
+                            backgroundColor: '#fff', titleColor: 'var(--gold-primary)', bodyColor: 'var(--text-dark)', borderColor: 'var(--border-color)', borderWidth: 1, padding: 10,
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
+
